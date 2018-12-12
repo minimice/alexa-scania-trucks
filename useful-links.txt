@@ -1,0 +1,4 @@
+http://sauce-boss.s3-website-us-east-1.amazonaws.com/1-alexa-skills-basics/
+https://developer.amazon.com/docs/alexa-presentation-language/apl-overview.html
+https://developer.amazon.com/alexa-skills-kit/alexa-developer-skill-promotion
+https://developer.amazon.com/alexa/console/ask
