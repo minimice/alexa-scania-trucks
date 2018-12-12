@@ -1,0 +1,94 @@
+{
+    "interactionModel": {
+        "languageModel": {
+            "invocationName": "scania trucks",
+            "intents": [
+                {
+                    "name": "AMAZON.CancelIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.HelpIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.StopIntent",
+                    "samples": []
+                },
+                {
+                    "name": "WhereIsMyTruckIntent",
+                    "slots": [
+                        {
+                            "name": "id",
+                            "type": "LIST_OF_TRUCKS"
+                        }
+                    ],
+                    "samples": [
+                        "where is my truck {id}",
+                        "where is truck {id}"
+                    ]
+                },
+                {
+                    "name": "AMAZON.NavigateHomeIntent",
+                    "samples": []
+                },
+                {
+                    "name": "MoveTruckIntent",
+                    "slots": [
+                        {
+                            "name": "id",
+                            "type": "LIST_OF_TRUCKS"
+                        },
+                        {
+                            "name": "location",
+                            "type": "LIST_OF_MOVE_TO_LOCATIONS"
+                        }
+                    ],
+                    "samples": [
+                        "move truck {id} to {location}"
+                    ]
+                },
+                {
+                    "name": "HowManyTrucksIntent",
+                    "slots": [],
+                    "samples": [
+                        "what are the names of my trucks",
+                        "how many trucks do I have"
+                    ]
+                }
+            ],
+            "types": [
+                {
+                    "name": "LIST_OF_TRUCKS",
+                    "values": [
+                        {
+                            "name": {
+                                "value": "beta"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "alpha"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "LIST_OF_MOVE_TO_LOCATIONS",
+                    "values": [
+                        {
+                            "name": {
+                                "value": "work"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "home"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}
