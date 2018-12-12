@@ -1,0 +1,56 @@
+{
+  "type": "APL",
+  "version": "1.0",
+  "import": [
+    {
+      "name": "alexa-layouts",
+      "version": "1.0.0"
+    }
+  ],
+  "mainTemplate": {
+    "parameters": [
+      "payload"
+    ],
+    "items": [
+      {
+                    "type": "Container",
+                    "height": "100vh",
+                    "items": [
+                        {
+                            "type": "Image",
+                            "source": "https://www.scania.com/content/scanianoe/global/en/scania_products_list/trucks/r-day-cab/_jcr_content/productDetails/assets/asset.img.png",
+                            "scale": "best-fill",
+                            "width": "100vw",
+                            "height": "100vh",
+                            "position": "absolute"
+                        },
+                        {
+                            "type": "AlexaHeader",
+                            "headerAttributionImage": ""
+                        },
+                        {
+                            "type": "Container",
+                            "grow": 1,
+                            "justifyContent": "${viewport.shape == 'round' ? 'center' : 'end'}",
+                            "items": [
+                                {
+                                    "paddingLeft": "@marginLeft",
+                                    "paddingRight": "@marginRight",
+                                    "paddingTop": 150,
+                                    "type": "Text",
+                                    "text": "<b>Scania Trucks</b>",
+                                    "style": "textStyleBody",
+                                    "textAlign": "${viewport.shape == 'round' ? 'center' : 'left'}"
+                                }
+                            ]
+                        },
+                        {
+                            "when": "${viewport.shape != 'round'}",
+                            "type": "AlexaFooter",
+                            "footerHint": "Try, \"Alexa, where is truck alpha?\""
+                        }
+                    ]
+                }
+    ]
+  }
+}
