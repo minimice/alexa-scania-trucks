@@ -3,7 +3,6 @@
 // session persistence, api calls, and more.
 const Alexa = require('ask-sdk-core');
 const https = require('https');
-const http = require('http');
 
 const LaunchRequestHandler = {
     canHandle(handlerInput) {
@@ -57,24 +56,53 @@ const MoveTruckIntentHandler = {
             }
         }
         
-        var speechText = 'Okay I will move truck ' + truckName + ' to ' + truckDest;
-        
-        //if (truckName != 'alpha' && truckName != 'beta') {
-        //    speechText = 'You only have two trucks, alpha and beta.  I cannot move a truck you do not have.';
-        //}
+        var speechText = 'Okay I will move truck ' + truckName;// + ' to ' + truckDest;
         
         // https://cuddly-baboon-77.localtunnel.me/api/action?vehicleId=1000&toLat=63.798221&toLong=20.227907
         
-        if (truckName !== 'alpha') {
-            speechText = 'You only have one trucks, alpha.  I cannot move a truck you do not have.';
+        if (truckName !== 'alpha' && truckName !== 'beta' && truckName !== 'charlie') {
+            speechText = 'You only three trucks named alpha, beta, and charlie.  I cannot move a truck you do not have.';
         } else {
            // Make the API call
-           const vehicleId = '1000';
-           const lat = '63.79822';
-           const lng = '20.227907';
-           const response = await postDestination(vehicleId,lat,lng);
-           //const theStreet = response.results[0].location.street;
-           //speechText = 'Truck ' + truckName + ' is somewhere roaming around at ' + theStreet;             
+           var vehicleId = '1000';
+           var lat = '';
+           var lng = '';
+           
+           if (truckName === 'beta') {
+               vehicleId = '1001';
+           } else if (truckName === 'charlie') {
+               vehicleId = '1002';
+           }
+           
+           if (truckDest === 'stockholm') {
+                // 59.344755, 18.054850
+                lat = '59.344755';
+                lng = '18.054850';
+                speechText = 'Okay I will move ' + truckName + ' to ' + truckDest;
+                console.log(speechText);
+           } else if (truckDest === 'gothenburg') {
+                lat = '57.7010496'; // 57.7010496,11.6136596
+                lng = '11.6136596';
+                speechText = 'Okay I will move ' + truckName + ' to ' + truckDest;
+                console.log(speechText);
+           } else { // if (truckDest === 'kalix' || truckDest === 'kallix') {
+                lat = '65.8585681'; // 57.7010496,11.6136596
+                lng = '23.1217093';
+                speechText = 'Okay I will move ' + truckName + ' to kalix';
+                console.log(speechText);                
+           } /*else if (truckDest === 'kiruna') {
+                lat = '67.850166'; // 67.850166, 20.218540
+                lng = '20.218540';
+                speechText = 'Okay I will move ' + truckName + ' to ' + truckDest;
+                console.log(speechText);
+           }*/
+           
+           if (lat === '' || lng === '') {
+                speechText = 'I do not understand your destination, you can only use stockholm, gothenburg, and kalix.';
+                console.log(speechText);
+           } else {
+                const response = await postDestination(vehicleId,lat,lng);
+           }         
         }
       
         return handlerInput.responseBuilder
@@ -99,7 +127,8 @@ const HowManyTrucksIntentHandler = {
             //Voice Intent Request
         }
         
-        var speechText = 'You have one truck named alpha.';
+        //var speechText = 'You have one truck named alpha.';
+        var speechText = 'You have three trucks named alpha, beta, and charlie.';
         
         return handlerInput.responseBuilder
             .speak(speechText)
@@ -129,8 +158,9 @@ const WhereIsMyTruckIntentHandler = {
         
         var speechText = "";
         
-        if (truckName !== 'alpha') { // && truckName != 'beta') {
-            speechText = 'You only have one truck, alpha.  I can\'t find truck ' + truckName;
+        if (truckName !== 'alpha' && truckName !== 'beta' && truckName !== 'charlie') {
+            speechText = 'You only have three trucks, alpha, beta, and charlie.  I can\'t find truck ' + truckName;
+            console.log("You asked for " + truckName);
         } else {
            // Make the API call
             const response = await httpGet();
@@ -149,7 +179,7 @@ function postDestination(vehicleId, lat, lng) {
     // http://localhost:5000/api/action?vehicleId=1000&toLat=63.798221&toLong=20.227907
   return new Promise(((resolve, reject) => {
     var options = {
-        host: 'pretty-fish-92.localtunnel.me',
+        host: 'scaniahack.localtunnel.me',
         port: 443,
         path: '/api/action?vehicleId='+vehicleId+'&toLat='+lat+'&toLong='+lng,
         method: 'GET',
