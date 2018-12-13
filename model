@@ -24,6 +24,7 @@
                         }
                     ],
                     "samples": [
+                        "where is {id}",
                         "where is my truck {id}",
                         "where is truck {id}"
                     ]
@@ -45,6 +46,7 @@
                         }
                     ],
                     "samples": [
+                        "move {id} to {location}",
                         "move truck {id} to {location}"
                     ]
                 },
@@ -52,6 +54,7 @@
                     "name": "HowManyTrucksIntent",
                     "slots": [],
                     "samples": [
+                        "what are my trucks",
                         "what are the names of my trucks",
                         "how many trucks do I have"
                     ]
