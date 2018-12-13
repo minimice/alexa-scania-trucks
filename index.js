@@ -2,9 +2,8 @@
 // Please visit https://alexa.design/cookbook for additional examples on implementing slots, dialog management,
 // session persistence, api calls, and more.
 const Alexa = require('ask-sdk-core');
-var https = require('https');
-
-
+const https = require('https');
+const http = require('http');
 
 const LaunchRequestHandler = {
     canHandle(handlerInput) {
@@ -12,27 +11,25 @@ const LaunchRequestHandler = {
     },
     handle(handlerInput) {
         const viewportProfile = Alexa.getViewportProfile(handlerInput.requestEnvelope);
+        const speechText = 'Welcome to Scania Trucks, you can ask where your truck is, move your truck, or ask how many trucks you have. Which would you like to try?';
         
-        if(viewportProfile === "HUB-LANDSCAPE-MEDIUM" || viewportProfile === "HUB-ROUND-SMALL"){
-                const speechText = 'Welcome to Scania Trucks, you can ask where your truck is, move your truck, or ask how many trucks you have. Which would you like to try?';
-                return handlerInput.responseBuilder
-                    .speak(speechText)
-                    .addDirective({
-                        type: 'Alexa.Presentation.APL.RenderDocument',
-                        version: '1.0',
-                        document: require('./documents/launchrequest.json'),
-                        datasources: {}
-                    })
-                    .reprompt(speechText)
-                    .getResponse();
-             } else {
-                const speechText = 'Welcome to Scania Trucks, you can ask where your truck is, move your truck, or ask how many trucks you have. Which would you like to try?';
-                return handlerInput.responseBuilder
-                    .speak(speechText)
-                    .reprompt(speechText)
-                    .getResponse();
-             }
+        if (viewportProfile === "HUB-LANDSCAPE-MEDIUM" || viewportProfile === "HUB-ROUND-SMALL") {
+            return handlerInput.responseBuilder
+                .speak(speechText)
+                .addDirective({
+                    type: 'Alexa.Presentation.APL.RenderDocument',
+                    version: '1.0',
+                    document: require('./documents/launchrequest.json'),
+                    datasources: {}
+                })
+                .reprompt(speechText)
+                .getResponse();
+        }
         
+        return handlerInput.responseBuilder
+            .speak(speechText)
+            .reprompt(speechText)
+            .getResponse();
     }
 };
 const MoveTruckIntentHandler = {
@@ -40,7 +37,7 @@ const MoveTruckIntentHandler = {
         return handlerInput.requestEnvelope.request.type === 'IntentRequest'
             && handlerInput.requestEnvelope.request.intent.name === 'MoveTruckIntent';
     },
-    handle(handlerInput) {
+    async handle(handlerInput) {
         
         var truckName = "";
         var truckDest = "";
@@ -62,8 +59,22 @@ const MoveTruckIntentHandler = {
         
         var speechText = 'Okay I will move truck ' + truckName + ' to ' + truckDest;
         
-        if (truckName != 'alpha' && truckName != 'beta') {
-            speechText = 'You only have two trucks, alpha and beta.  I cannot move a truck you do not have.';
+        //if (truckName != 'alpha' && truckName != 'beta') {
+        //    speechText = 'You only have two trucks, alpha and beta.  I cannot move a truck you do not have.';
+        //}
+        
+        // https://cuddly-baboon-77.localtunnel.me/api/action?vehicleId=1000&toLat=63.798221&toLong=20.227907
+        
+        if (truckName !== 'alpha') {
+            speechText = 'You only have one trucks, alpha.  I cannot move a truck you do not have.';
+        } else {
+           // Make the API call
+           const vehicleId = '1000';
+           const lat = '63.79822';
+           const lng = '20.227907';
+           const response = await postDestination(vehicleId,lat,lng);
+           //const theStreet = response.results[0].location.street;
+           //speechText = 'Truck ' + truckName + ' is somewhere roaming around at ' + theStreet;             
         }
       
         return handlerInput.responseBuilder
@@ -88,7 +99,7 @@ const HowManyTrucksIntentHandler = {
             //Voice Intent Request
         }
         
-        var speechText = 'You have two trucks named alpha and beta.';
+        var speechText = 'You have one truck named alpha.';
         
         return handlerInput.responseBuilder
             .speak(speechText)
@@ -118,8 +129,8 @@ const WhereIsMyTruckIntentHandler = {
         
         var speechText = "";
         
-        if (truckName != 'alpha' && truckName != 'beta') {
-            speechText = 'You only have two trucks, alpha and beta.  I can\'t find truck ' + truckName;
+        if (truckName !== 'alpha') { // && truckName != 'beta') {
+            speechText = 'You only have one truck, alpha.  I can\'t find truck ' + truckName;
         } else {
            // Make the API call
             const response = await httpGet();
@@ -133,6 +144,36 @@ const WhereIsMyTruckIntentHandler = {
             .getResponse();
     }
 };
+
+function postDestination(vehicleId, lat, lng) {
+    // http://localhost:5000/api/action?vehicleId=1000&toLat=63.798221&toLong=20.227907
+  return new Promise(((resolve, reject) => {
+    var options = {
+        host: 'pretty-fish-92.localtunnel.me',
+        port: 443,
+        path: '/api/action?vehicleId='+vehicleId+'&toLat='+lat+'&toLong='+lng,
+        method: 'GET',
+    };
+    
+    const request = https.request(options, (response) => {
+      response.setEncoding('utf8');
+      let returnData = '';
+
+      response.on('data', (chunk) => {
+        returnData += chunk;
+      });
+
+      response.on('end', () => {
+        resolve();//JSON.parse(returnData));
+      });
+
+      response.on('error', (error) => {
+        reject(error);
+      });
+    });
+    request.end();
+  }));
+}
 
 function httpGet() {
   return new Promise(((resolve, reject) => {
